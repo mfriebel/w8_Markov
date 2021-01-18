@@ -137,3 +137,6 @@ dmypy.json
 
 # config file for project week07
 config.py
+
+# local files
+/data
