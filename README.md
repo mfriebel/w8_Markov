@@ -15,20 +15,6 @@
     * fill the shelves of a supermarket image
     * clean up your code
 
-This project may be complicated to complete on your own. Even in a team, you may want to focus on a few of the tasks at a time.
-
-Please do the following:
-
-Form a team of 2-4 people
-
-Read the instructions carefully
-
-Create a GitHub repository for the project
-
-Invite all people on the team as collaborators
-
-Discuss who does what
-
 
 ### 1. Explore Data (https://krspiced.pythonanywhere.com/chapters/project_markov/data_analysis.html#explore-supermarket-data)
 
