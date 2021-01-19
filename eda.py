@@ -48,25 +48,33 @@ monday[monday.duplicated() == False].groupby("location").size() # unique custome
 
 # Calculate the total number of customers in each section over time
 
-data.groupby([data.index, "location"]).count()
+data.groupby([data.index, "location"]).size()
+# Do it over hour and remove duplicates
 
 
 # Display the number of customers at checkout over time
 
-monday[monday["location"] == "checkout"]["customer_no"].resample(TIMESTEP).count()
+monday[monday["location"] == "checkout"]["customer_no"].resample(TIMESTEP).size()
 
 
 # Calculate the time each customer spent in the market
 
 data_customer_centric.notna().sum(axis = 0)
 
+data.index.max()
+def minmax(df):
+    return df.index.max() - df.index.min()
+
+data.groupby("customer_no").agg(minmax)
+
 
 # Calculate the total number of customers in the supermarket over time
 
 data_customer_centric.notna().sum(axis = 1)
-unique_customers(monday).resample(TIMESTEP).count()
 
+unique_customers(monday).resample(TIMESTEP).size()
 
+    
 # Our business managers think that the first section customers visit follows a different pattern than the following ones. Plot the distribution of customers of their first visited section versus following sections (treat all sections visited after the first as “following”).
 
 # ! missing
@@ -78,9 +86,8 @@ unique_customers(monday).resample(TIMESTEP).count()
     # dairy: 5€
     # drinks: 6€
     
-table_locations = pd.crosstab(data["customer_no"], data["location"])==1
-table_locations["dairy"].replace(True, 5, inplace = True)
-table_locations["spices"].replace(True, 3, inplace = True)
-table_locations["fruit"].replace(True, 4, inplace = True)
-table_locations["drinks"].replace(True, 6, inplace = True)
-table_locations.drop("checkout", axis = 1).sum(axis = 1)
+table_locations = pd.crosstab(data["customer_no"], data["location"])
+table_locations["dairy"] = table_locations["dairy"].apply(lambda x: x * 5)
+table_locations["spices"] = table_locations["spices"].apply(lambda x: x * 3)
+table_locations["fruit"] = table_locations["fruit"].apply(lambda x: x * 4)
+table_locations["drinks"] = table_locations["drinks"].apply(lambda x: x * 6)
