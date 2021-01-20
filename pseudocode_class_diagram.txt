@@ -1,0 +1,19 @@
+Customer
+id : int
+state: int
+
+next_state() -> None
+is_active() -> bool
+_repr_() -> str 
+
+
+Supermarket:
+minutes : int
+last_id : int
+customers : [Customer]
+
+get_time() -> str
+print_customers() -> None
+next_minute() -> None
+add_new_customers() -> None 
+remove_ex_customers() -> None
