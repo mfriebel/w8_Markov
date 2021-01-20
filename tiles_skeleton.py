@@ -1,7 +1,5 @@
 import numpy as np
 import cv2
-import fill_shelves
-
 
 TILE_SIZE = 32
 OFS = 50
@@ -18,7 +16,7 @@ MARKET = """
 ##..C#..C#..C#...#
 ##..##..##..##...#
 ##...............#
-##############GG##
+#############MGGM#
 """.strip()
 
 class SupermarketMap:
@@ -48,6 +46,8 @@ class SupermarketMap:
             return self.tiles[2 * 32 : 3 * 32, 8 * 32 : 9 * 32]
         elif char == "b":
             return self.tiles[0 * 32 : 1 * 32, 4 * 32 : 5 * 32]
+        elif char == "M":
+            return self.tiles[7 * 32 : 8 * 32, 2 * 32 : 3 * 32]
         else:
             return self.tiles[32:64, 64:96]
 
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     market = SupermarketMap(MARKET, tiles)
     
     # Select ghost tile from tiles
-    image_customer = tiles[7 * 32 : 8 * 32, 1 * 32 : 2 * 32]
+    image_customer = tiles[8 * 32 : 9 * 32, 1 * 32 : 2 * 32]
     # Initial x and y positions
     posx_customer = 15
     posy_customer = 10
