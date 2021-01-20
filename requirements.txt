@@ -1,0 +1,20 @@
+1. User Requirement
+
+    1.1 As a user, I want multiple customers to follow predefined paths on the screen simultaneously.
+
+2. System Requirements:
+
+    2.1 There should be a supermarket in the background
+
+    2.2 The customers should travel infinitely
+
+    2.3 The customers should travel along predefined vectors
+
+    2.4 The customers are square-shaped tiles of 32x32 pixels
+
+    2.5 The customers move up/down or left/right
+
+3. Nonfunctional Requirements:
+
+    3.1 implementation is to be done in Python
+
