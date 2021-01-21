@@ -63,7 +63,7 @@ class Supermarket:
             return False
 
 customer_list = []
-
+s = Supermarket ()
 for i in range(5):
     c = Customer('id', 'state', 'transition_mat')
     customer_list.append(c)
