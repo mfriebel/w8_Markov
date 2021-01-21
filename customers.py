@@ -1,6 +1,22 @@
 import numpy as np
+import pandas as pd
 from data_exploration import load_data
-from transition_matrix import create_probability_matrix
+
+
+# probability matrix implemented by Daniel..
+def create_probability_matrix(df):
+    """Create a probability matrix for the supermarket example
+    Args:
+        df (DataFrame): DataFrame containing the customer positions over time
+    Returns:
+        DataFrame: Probability matrix
+    """
+    
+    df["go_to_next"] = df.groupby("customer_no")["location"].shift(-1)
+    prob_matrix = pd.crosstab(df["location"], df["go_to_next"], normalize = 0)
+    prob_matrix.loc["checkout"] = [1,0,0,0,0]
+    
+    return prob_matrix
 
 data = load_data()
 transition_mat = create_probability_matrix(data)
@@ -18,7 +34,7 @@ class Customer:
         """
         Returns a csv string for that customer.
         """
-        return f"The customer with number {self.id} is in {self.state}"
+        return f"--Customer {self.id} is in {self.state}"
 
     def is_active(self):
         """
@@ -33,4 +49,13 @@ class Customer:
         """
         randomly selects the customer's next location from self.transition_mat
         """
-        self.state = np.random.choice(transition_mat.index, p=self.transition_mat)
+        self.state = np.random.choice(transition_mat.index, p=self.transition_mat.loc[self.state])
+
+def customers_states(customer):
+    initial_state = np.random.choice(transition_mat.index)
+    c = Customer(customer, initial_state, transition_mat)
+    print(f"customer {customer} initial state: {initial_state}")
+    while c.is_active() is True:
+        c.next_state()
+        print(c)
+    print("The customer left the supermarket")
