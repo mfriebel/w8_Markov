@@ -10,9 +10,9 @@ supermarket_aisles = {"fruit" : {'xpos' : [14, 15], 'ypos' : [2, 3, 4, 5, 6]},
                         "spices" : {'xpos' : [11, 12], 'ypos' : [2, 3, 4, 5, 6]},
                         "dairy" : {'xpos' : [6, 7], 'ypos' : [2, 3, 4, 5, 6]},
                         "drinks" : {'xpos' : [2, 3], 'ypos' : [2, 3, 4, 5, 6]},
-                        "checkouts" : [{'xpos' : [2, 3], 'ypos' : [8, 9]}, 
-                                        {'xpos' : [6, 7], 'ypos' : [8, 9]}, 
-                                        {'xpos' : [10, 11], 'ypos' : [8, 9]}]}
+                        "checkout" : {'xpos' : [2, 3, 6, 7, 10, 11], 'ypos' : [8, 9]},
+                        "entrance" : {'xpos' : [14, 15], 'ypos' : [7, 8,9,10]} 
+                    }
 
 MARKET = """
 ##################
@@ -115,9 +115,10 @@ class SupermarketMap:
         """writes the image into a file"""
         cv2.imwrite(filename, self.image)
 
+# Customer Class from Wail merged with Matthias Customer Class from Vis
 class Customer:
     """Draws an customer on the supermarket background"""
-    def __init__(self, id, state, transition_mat, terrain_map, aisles, image, x, y):
+    def __init__(self, id, transition_mat, terrain_map, aisles, image):
         """
         terrain_map : SupermarketMap object
         image   : a numpy array containing the tile image of customer
@@ -125,13 +126,15 @@ class Customer:
         y : initial y position of the customer
         """
         self.id = id
-        self.state = state
+        self.state = 'entrance'
         self.transition_mat = transition_mat
         self.terrain_map = terrain_map
         self.aisles = aisles
         self.image = image
-        self.x = x
-        self.y = y
+        self.x = 15
+        self.y = 10
+        self.x_target = np.random.choice(self.aisles[self.state]['xpos'])
+        self.y_target = np.random.choice(self.aisles[self.state]['ypos'])
 
     def __repr__(self):
         """
@@ -153,6 +156,8 @@ class Customer:
         randomly selects the customer's next location from self.transition_mat
         """
         self.state = np.random.choice(transition_mat.index, p=self.transition_mat.loc[self.state])
+        self.x_target = np.random.choice(self.aisles[self.state]['xpos'])
+        self.y_target = np.random.choice(self.aisles[self.state]['ypos'])
 
     def draw(self, frame):
         """Places customer image onto the background frame """
@@ -187,26 +192,55 @@ class Customer:
 
         x_pos = self.x 
         y_pos = self.y
-
+        target_x_pos = self.x_target
+        target_y_pos = self.y_target
         next_aisle = self.aisles[self.state]
-        #print(y_pos in next_aisle['ypos'])
-        # move vertically into aisle
-        #if y_pos in next_aisle['ypos'] == True:
-        #    None
-        #elif y_pos > next_aisle['ypos'][0]:
-        #    self.move('up')
-        #elif y_pos < next_aisle['ypos'][-1]:
-        #    self.move('down')
-
-        # move horizontially out of aisle
-
-        # move horizontally to aisle
-
-        # move vertically into aisle
-
-    def __repr__(self):
-        return f'Customer with x-pos {self.x} and y-pos {self.y} has image {self.image[0]}'
-
+        print(x_pos, target_x_pos)
+        print(y_pos, target_y_pos)
+        
+        #move vertically into aisle
+        if self.state == 'entrance':
+            if y_pos > 7:
+                self.move('up')
+            else:
+                self.state = np.random.choice(intial_state_vector_index, p=intial_state_vector)
+                self.x_target = np.random.choice(self.aisles[self.state]['xpos'])
+                self.y_target = np.random.choice(self.aisles[self.state]['ypos'])
+        elif (y_pos == target_y_pos) and (x_pos == target_x_pos):
+            self.next_state()
+        elif self.state == 'checkout':  #and x_pos < target_x_pos
+            if y_pos == 10 and x_pos != 14:
+                self.move('right')
+            else:
+                self.move('down') 
+        elif (y_pos not in [1, 7]) and (x_pos != target_x_pos):
+            # Customer not in lane and wrong aisle
+            if y_pos > target_y_pos:
+                self.move('up')
+            else:
+                self.move('down')
+        elif (y_pos in [1, 7]) and (x_pos != target_x_pos):
+            # Customer in lane, but not on aisle position
+            if x_pos > target_x_pos:
+                self.move('left')
+            else:
+                self.move('right')
+        elif (y_pos in [1, 7]) and (x_pos == target_x_pos):
+            # Customer in lane and on aisle position
+            if y_pos > target_y_pos:
+                self.move('up')
+            else:
+                self.move('down')
+        else:
+            # Customer not in lane and right aisle
+            if y_pos > target_y_pos:
+                self.move('up')
+            else:
+                self.move('down')
+  
+        
+        
+# Supermarket Class from Nora not pulled in yet
 class Supermarket:
     ...
 
@@ -228,11 +262,8 @@ if __name__ == "__main__":
     # Select ghost tile from tiles
     image_customer = tiles[8 * 32 : 9 * 32, 1 * 32 : 2 * 32]
     # Initial x and y positions
-    posx_customer = 15
-    posy_customer = 10
     # Instantiate customer
-    intial_state = np.random.choice(intial_state_vector_index, p=intial_state_vector)
-    c = Customer(1, intial_state, transition_mat, market, supermarket_aisles, image_customer, posx_customer, posy_customer)
+    c = Customer(1, transition_mat, market, supermarket_aisles, image_customer)
 
     while True:
         # Creates the frame of the visualisation
@@ -241,12 +272,13 @@ if __name__ == "__main__":
         market.draw(frame)
         # Draws the customer on the market
         c.draw(frame)
-
-        #time.sleep(0.1)
         
         cv2.imshow("frame", frame)
 
         c.move_to_next_state()
+        
+        time.sleep(0.5)
+        print(c)
         key = chr(cv2.waitKey(1) & 0xFF)
         
         # Lets customer move by key
