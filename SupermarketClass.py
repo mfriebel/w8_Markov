@@ -5,39 +5,51 @@ It writes a csv with customer_id and the time.
 
 import numpy as np
 import pandas as pd
-from transition_matrix import create_probability_matrix
+from transition_matrix import create_probability_matrix, get_initial_state
 from CustomerClass import Customer
 import os
 import csv
 
+monday = pd.read_csv('/mnt/c/users/noram/Documents/Coding/SpicedAcademy/week08/data/monday.csv', sep = ";", parse_dates = True)
+tuesday = pd.read_csv('/mnt/c/users/noram/Documents/Coding/SpicedAcademy/week08/data/tuesday.csv', sep = ";", parse_dates = True)
+wednesday = pd.read_csv('/mnt/c/users/noram/Documents/Coding/SpicedAcademy/week08/data/wednesday.csv', sep = ";", parse_dates = True)
+thursday = pd.read_csv('/mnt/c/users/noram/Documents/Coding/SpicedAcademy/week08/data/thursday.csv', sep = ";", parse_dates = True)
+friday = pd.read_csv('/mnt/c/users/noram/Documents/Coding/SpicedAcademy/week08/data/friday.csv', sep = ";", parse_dates = True)
+print(friday)
+df = monday.append(tuesday).append(wednesday).append(thursday).append(friday)
+df['timestamp'] = pd.to_datetime(df['timestamp'])
+df['day_of_week'] = df['timestamp'].dt.weekday
+print(df)
+df["customer_no"] = df['day_of_week'] + df["customer_no"]
 
-
-transition_mat = create_probability_matrix
-p = transition_mat
 
 
 
 class Supermarket:
     """manages multiple Customers that are currently in the supermarket."""
 
-    def __init__(self,customer, minutes, last_id, history, time):        
+    def __init__(self,customer_list):        
         """ a list of Customer objects"""
-        self.customers = []
-        self.minutes = 0
-        self.last_id = 0
+        self.customers = customer_list
+        self.minute = 0
+        self.last_id = 0 
         self.history = []
-        self.time = 1
+        self.time = 0
+        
+
+      
 
     def __repr__(self):
         pass
 
     def get_time(self):
         """current time in HH:MM format"""
-        if self.time == 21:
-            return False
-        else:
-            return True
+        hour = 7 + self.minute // 60
+        minute = self.minute % 60
+        if minute < 10:
+            time = f'{hour:02}:{minute:02}'
         print(f' The current time is{self.time}') 
+        return time
 
     def print_customers():
         """print all customers with the current time and id in CSV format."""
@@ -49,30 +61,47 @@ class Supermarket:
 
     def next_minute(self):
         """propagates all customers to the next state."""
-        self.current_location = np.random.choice(transition_mat.index, p=transition_mat)
-        self.history
-    
-    def add_new_customers(self):
-        """randomly creates new customers."""
-        self.customers.append(Customer())
+        time = self.get_time()
+        for customer in self.customers:
+            if time =="21:00":
+                customer.state = "checkout"
+            else:
+                customer.next_state
+            self.remove_exitsting_customers(customer)
+        self.minute + 1
 
-    def remove_exitsting_customers(self):
+
+    def add_new_customers(self):
+        """randomly creates new customers.""" 
+        if len(self.customers) < 5:
+            self.customers.append(Customer(get_intial_state(),id, state, transition_mat))
+            self.last_id += 1   
+
+    def remove_existing_customers(self, customer):
         """removes every customer that is not active any more."""
-        c = Customers
-        if self.state == 'checkout':
-            return False
+        if customer.is_active() == False:
+            self.customers.remove(customer)
+            self.add_new_customers()
+        ...
+
+
+transition_mat = create_probability_matrix(df)
+
+intial_state_vector = monday[monday["customer_no"].duplicated() == False][["location"]]
+intial_state_vector = intial_state_vector['location'].value_counts(normalize=True)
+intial_state_vector_index = [element[0] for element in intial_state_vector.index] # how to change this
 
 customer_list = []
-s = Supermarket ()
-for i in range(5):
-    c = Customer('id', 'state', 'transition_mat')
-    customer_list.append(c)
 
-for c in customer_list:
-    c.next_state
-    while c.is_active() is True:
-        c.next_state
-        if c.next_state == 'checkout':
-            c.remove_existing_customers
-    print(c.add_new_customer)
 
+#customers_states(1)
+#for n in range(10):
+   # intial_state = np.random.choice(intial_state_vector_index, p=intial_state_vector)
+    #c = Customer(id, state, transition_mat)
+    #customer_list.append(c)
+
+print(customer_list)
+s = Supermarket(customer_list)
+print(s.customers)
+s.get_time()
+s.next_minute()
