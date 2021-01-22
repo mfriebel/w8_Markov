@@ -35,8 +35,6 @@ class Supermarket:
         self.last_id = 0 
         self.history = []
         self.time = 0
-        
-
       
 
     def __repr__(self):
@@ -67,22 +65,23 @@ class Supermarket:
                 customer.state = "checkout"
             else:
                 customer.next_state
-            self.remove_exitsting_customers(customer)
+            #self.remove_exitsting_customers(Customer)
         self.minute + 1
 
 
     def add_new_customers(self):
         """randomly creates new customers.""" 
         if len(self.customers) < 5:
-            self.customers.append(Customer(get_intial_state(),id, state, transition_mat))
+            self.customers.append(Customer())
             self.last_id += 1   
+        print(f'a new customer has arrived')    
 
     def remove_existing_customers(self, customer):
         """removes every customer that is not active any more."""
         if customer.is_active() == False:
             self.customers.remove(customer)
             self.add_new_customers()
-        ...
+        print(f'a customer has left the Supermarket')
 
 
 transition_mat = create_probability_matrix(df)
@@ -95,13 +94,15 @@ customer_list = []
 
 
 #customers_states(1)
-#for n in range(10):
-   # intial_state = np.random.choice(intial_state_vector_index, p=intial_state_vector)
-    #c = Customer(id, state, transition_mat)
-    #customer_list.append(c)
+for n in range(10):
+    intial_state = np.random.choice(intial_state_vector_index, p=intial_state_vector)
+    c = Customer('id','state','transition_mat')
+    customer_list.append(c)
 
 print(customer_list)
 s = Supermarket(customer_list)
 print(s.customers)
 s.get_time()
 s.next_minute()
+s.add_new_customers()
+s.remove_existing_customers(c)
